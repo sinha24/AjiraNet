@@ -32,6 +32,7 @@ def process(request):
         if request.method == 'POST':
             body = request.body.splitlines()
             command = [i.decode('utf-8') for i in body[0].split()]
+
             if command[0] == 'CREATE' and command[1] == '/devices':
                 req = json.loads(body[-1].decode('utf-8'))
                 if req['type'] == 'COMPUTER':
@@ -40,6 +41,7 @@ def process(request):
                     nw_graph[req['name']] = {'type' : 'REPEATER', 'strength' : 5, 'edges' : set()}
                 logger.debug(nw_graph)
                 return HttpResponse(str({'network':nw_graph}))
+
             elif command[0] == 'CREATE' and command[1] == '/connections':
                 req = json.loads(body[-1].decode('utf-8'))
                 if req['source'] in nw_graph:
@@ -50,12 +52,14 @@ def process(request):
                                 nw_graph[i]['edges'].add(req['source'])
                 logger.debug(nw_graph)
                 return HttpResponse(str({'network':nw_graph}))
+
             elif command[0] == 'FETCH' and command[1] == '/devices':
                 device_list = []
                 for i in nw_graph.keys():
                     device_list += [i]
                 logger.debug('fetch devices',device_list)
                 return HttpResponse(str({'devices':device_list}))
+
             elif command[0] == 'FETCH':
                 params = command[1].split('?')[-1].split('&')
                 source = params[0].split('=')[-1]
@@ -69,6 +73,7 @@ def process(request):
                     return HttpResponse('Error : No route found between source and target')
                 else:
                     return HttpResponse(str({'route':route}))
+                    
             elif command[0] == 'MODIFY':
                 params = command[1].split('/')
                 target = params[2]
