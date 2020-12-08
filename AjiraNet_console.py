@@ -8,20 +8,19 @@ def dfs(source,visited,target,remaining_strength,route):
             return []
         visited.add(source)
         routes = []
-        for i in ajira_net[source]['connections']:
-            if i not in visited:
-                if ajira_net[i]['type'] == 'REPEATER':
-                    t = dfs(i,visited,target,remaining_strength*2-1,route+[i])
-                elif ajira_net[i]['type'] == 'BRIDGE':
-                    t = dfs(i,visited,target,remaining_strength-2,route+[i])
+        for device in ajira_net[source]['connections']:
+            if device not in visited:
+                if ajira_net[device]['type'] == 'REPEATER':
+                    result = dfs(device,visited,target,remaining_strength*2-1,route+[device])
+                elif ajira_net[device]['type'] == 'BRIDGE':
+                    result = dfs(device,visited,target,remaining_strength-2,route+[device])
                 else:
-                    t = dfs(i,visited,target,remaining_strength-1,route+[i])
-                if len(t) > 0:
-                    routes.append([len(t),t])
+                    result = dfs(device,visited,target,remaining_strength-1,route+[device])
+                if len(result) > 0:
+                    routes.append([len(result),result])
         visited.remove(source)
         if len(routes) > 0:
-            t = min(routes)
-            return t[1]
+            return min(routes)[1]
         else:
             return []
 
